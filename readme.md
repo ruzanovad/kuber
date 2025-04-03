@@ -102,6 +102,8 @@ service "simpsons-service" deleted
 kaiser@fedora ~/w/r/p/d/kuber (main)> kubectl apply -f service.yaml                                            (base) 
 service/simpsons-service created 
 ```
+
+# Демонстрация работы модели
 Доступ к серверу через `http:"minikube ip":30080`
 
 Я использую swagger api для простоты
