@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simpsons-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: simpsons
+  template:
+    metadata:
+      labels:
+        app: simpsons
+    spec:
+      imagePullSecrets:
+      - name: regcred
+      containers:
+      - name: simpsons-prediction
+        image: kaiser7lu/simpsons_model:latest
+        ports:
+        - containerPort: 5000

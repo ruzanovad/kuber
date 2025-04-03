@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+scikit-learn==1.2.2
+joblib==1.3.2
+numpy<2
+python-multipart
+pillow
+tqdm
+scikit-image
+torch
+torchvision
+torchaudio
