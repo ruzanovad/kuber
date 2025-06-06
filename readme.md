@@ -1,6 +1,6 @@
 <div style="font-size: 48px; font-weight: bold;">HW-1 : KUBERNETES</div>
 
-# СТАРТУЕМ
+# Стартуем
 ```bash
 kaiser@fedora ~/w/r/p/d/kuber (main)> minikube start --driver=docker                                                         (base) 
 😄  minikube v1.35.0 on Fedora 40
