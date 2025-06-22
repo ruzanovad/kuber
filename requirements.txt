@@ -10,3 +10,5 @@ scikit-image
 torch
 torchvision
 torchaudio
+mlflow
+apache-airflow==2.9.1
