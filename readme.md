@@ -69,7 +69,7 @@ kubectl create secret docker-registry regcred \
   -n your-namespace
 ```
 Проверить, что точно все добавилось: 
-`kubectl add secrets`
+`kubectl get secrets`
 
 После фикса проблема не исчезла, однаок после внимательного рассмотрения Dockerfile выяснилось, что просто не запускался сервер и контейнер самоуничтожался. Поэтому пришлось переделать образ
 
@@ -120,3 +120,75 @@ service/simpsons-service created
 
 Или `minikube delete`, чтобы вообще удалить кластер
 
+# LoadBalancer
+
+```
+NAME               TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
+kubernetes         ClusterIP      10.96.0.1      <none>        443/TCP        2d1h
+simpsons-service   LoadBalancer   10.103.71.31   <pending>     80:30737/TCP   8m16s
+```
+
+Чтобы задать external-ip
+```
+minikube service simpsons-service --url
+```
+Для получения external-ip, при помощи которого мы будем обращаться к сервису
+
+
+Можно через туннелирование
+```
+󰣛 kaiser …/kuber   main   base   20:37  ❯ minikube tunnel 
+[sudo] password for kaiser: 
+Status:	
+	machine: minikube
+	pid: 98730
+	route: 10.96.0.0/12 -> 192.168.49.2
+	minikube: Running
+	services: [simpsons-service]
+    errors: 
+		minikube: no errors
+		router: no errors
+		loadbalancer emulator: no errors
+```
+
+Добавляем Ingress, [ссылка на yaml](ingress.yaml)
+
+```
+minikube addons enable ingress
+💡  ingress is an addon maintained by Kubernetes. For any concerns contact minikube on GitHub.
+You can view the list of minikube maintainers at: https://github.com/kubernetes/minikube/blob/master/OWNERS
+    ▪ Using image registry.k8s.io/ingress-nginx/controller:v1.12.2
+    ▪ Using image registry.k8s.io/ingress-nginx/kube-webhook-certgen:v1.5.3
+    ▪ Using image registry.k8s.io/ingress-nginx/kube-webhook-certgen:v1.5.3
+```
+
+```
+󰣛 kaiser …/kuber   main !?   base   21:35  ❯ kubectl get ingress
+
+NAME               CLASS   HOSTS   ADDRESS        PORTS   AGE
+simpsons-ingress   nginx   *       192.168.49.2   80      114s
+
+󰣛 kaiser …/kuber   main !?   base   21:35  ❯ kubectl get pods -n ingress-nginx
+
+NAME                                       READY   STATUS      RESTARTS   AGE
+ingress-nginx-admission-create-wlv4k       0/1     Completed   0          14m
+ingress-nginx-admission-patch-wnt8p        0/1     Completed   1          14m
+ingress-nginx-controller-67c5cb88f-x8t2f   1/1     Running     0          14m
+
+󰣛 kaiser …/kuber   main !?   base   21:36  ❯ kubectl get svc -n ingress-nginx
+NAME                                 TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                      AGE
+ingress-nginx-controller             NodePort    10.106.149.88    <none>        80:30653/TCP,443:31330/TCP   16m
+ingress-nginx-controller-admission   ClusterIP   10.105.203.182   <none>        443/TCP  
+
+󰣛 kaiser …/kuber   main !?   base   21:37  ❯ minikube service ingress-nginx-controller -n ingress-nginx
+|---------------|--------------------------|-------------|---------------------------|
+|   NAMESPACE   |           NAME           | TARGET PORT |            URL            |
+|---------------|--------------------------|-------------|---------------------------|
+| ingress-nginx | ingress-nginx-controller | http/80     | http://192.168.49.2:30653 |
+|               |                          | https/443   | http://192.168.49.2:31330 |
+|---------------|--------------------------|-------------|---------------------------|
+[ingress-nginx ingress-nginx-controller http/80
+https/443 http://192.168.49.2:30653
+http://192.168.49.2:31330]
+
+```
