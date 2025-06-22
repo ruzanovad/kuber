@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1 # Ingress resource to expose the service externally
+kind: Ingress
+metadata:
+  name: simpsons-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: / # / is the root path
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix # путь с префиксом
+            backend:
+              service:
+                name: simpsons-service # имя сервиса, который мы хотим открыть
+                port:
+                  number: 80 # порт, на котором сервис слушает
