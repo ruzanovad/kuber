@@ -122,21 +122,21 @@ service/simpsons-service created
 
 # LoadBalancer
 
-```
+```bash
 NAME               TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
 kubernetes         ClusterIP      10.96.0.1      <none>        443/TCP        2d1h
 simpsons-service   LoadBalancer   10.103.71.31   <pending>     80:30737/TCP   8m16s
 ```
 
 Чтобы задать external-ip
-```
+```bash
 minikube service simpsons-service --url
 ```
 Для получения external-ip, при помощи которого мы будем обращаться к сервису
 
 
 Можно через туннелирование
-```
+```bash
 󰣛 kaiser …/kuber   main   base   20:37  ❯ minikube tunnel 
 [sudo] password for kaiser: 
 Status:	
@@ -153,7 +153,7 @@ Status:
 
 Добавляем Ingress, [ссылка на yaml](ingress.yaml)
 
-```
+```bash
 minikube addons enable ingress
 💡  ingress is an addon maintained by Kubernetes. For any concerns contact minikube on GitHub.
 You can view the list of minikube maintainers at: https://github.com/kubernetes/minikube/blob/master/OWNERS
@@ -162,7 +162,7 @@ You can view the list of minikube maintainers at: https://github.com/kubernetes/
     ▪ Using image registry.k8s.io/ingress-nginx/kube-webhook-certgen:v1.5.3
 ```
 
-```
+```bash
 󰣛 kaiser …/kuber   main !?   base   21:35  ❯ kubectl get ingress
 
 NAME               CLASS   HOSTS   ADDRESS        PORTS   AGE
@@ -191,4 +191,18 @@ ingress-nginx-controller-admission   ClusterIP   10.105.203.182   <none>        
 https/443 http://192.168.49.2:30653
 http://192.168.49.2:31330]
 
+```
+
+# Установка Airflow
+
+Рекомендуется скачать uv
+
+Для fish (осторожно с `export`, у меня на этапе constraint url валилось) процесс будет выглядеть так
+```bash
+uv python install 3.10
+uv venv
+set -x AIRFLOW_VERSION 2.9.1
+set -x PYTHON_VERSION 3.10
+set -x CONSTRAINT_URL https://raw.githubusercontent.com/apache/airflow/constraints-$AIRFLOW_VERSION/constraints-$PYTHON_VERSION.txt
+uv pip install -r requirements.txt --constraint "$CONSTRAINT_URL"
 ```
